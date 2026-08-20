@@ -1,0 +1,51 @@
+spectral_type,meteorite_analog,commodity,mass_fraction_low,mass_fraction_high
+C,CI/CM carbonaceous chondrite,Water (bound H2O),0.1,0.2
+S,H/L/LL ordinary chondrite,Water (bound H2O),0.0,0.001
+M,Iron meteorite (Fe-Ni metal),Water (bound H2O),0.0,0.0
+V,HED basaltic achondrite,Water (bound H2O),0.0,0.0
+D/P,Tagish Lake-like C2 (uncertain),Water (bound H2O),0.05,0.15
+C,CI/CM carbonaceous chondrite,Carbon (organics),0.022,0.035
+S,H/L/LL ordinary chondrite,Carbon (organics),0.0,0.002
+M,Iron meteorite (Fe-Ni metal),Carbon (organics),0.0,0.0
+V,HED basaltic achondrite,Carbon (organics),0.0,0.0
+D/P,Tagish Lake-like C2 (uncertain),Carbon (organics),0.03,0.055
+C,CI/CM carbonaceous chondrite,Sulfur,0.027,0.054
+S,H/L/LL ordinary chondrite,Sulfur,0.02,0.024
+M,Iron meteorite (Fe-Ni metal),Sulfur,0.001,0.02
+V,HED basaltic achondrite,Sulfur,0.0,0.002
+D/P,Tagish Lake-like C2 (uncertain),Sulfur,0.03,0.04
+C,CI/CM carbonaceous chondrite,Iron (total),0.18,0.21
+S,H/L/LL ordinary chondrite,Iron (total),0.185,0.275
+M,Iron meteorite (Fe-Ni metal),Iron (total),0.85,0.93
+V,HED basaltic achondrite,Iron (total),0.13,0.15
+D/P,Tagish Lake-like C2 (uncertain),Iron (total),0.18,0.2
+C,CI/CM carbonaceous chondrite,Nickel,0.0102,0.012
+S,H/L/LL ordinary chondrite,Nickel,0.0102,0.0171
+M,Iron meteorite (Fe-Ni metal),Nickel,0.06,0.12
+V,HED basaltic achondrite,Nickel,1e-06,0.0001
+D/P,Tagish Lake-like C2 (uncertain),Nickel,0.01,0.012
+C,CI/CM carbonaceous chondrite,Cobalt,0.0005,0.00058
+S,H/L/LL ordinary chondrite,Cobalt,0.00049,0.00081
+M,Iron meteorite (Fe-Ni metal),Cobalt,0.004,0.006
+V,HED basaltic achondrite,Cobalt,2e-06,3e-05
+D/P,Tagish Lake-like C2 (uncertain),Cobalt,0.00045,0.00055
+C,CI/CM carbonaceous chondrite,Free Fe-Ni metal,0.0,0.005
+S,H/L/LL ordinary chondrite,Free Fe-Ni metal,0.02,0.18
+M,Iron meteorite (Fe-Ni metal),Free Fe-Ni metal,0.9,1.0
+V,HED basaltic achondrite,Free Fe-Ni metal,0.0,0.005
+D/P,Tagish Lake-like C2 (uncertain),Free Fe-Ni metal,0.0,0.01
+C,CI/CM carbonaceous chondrite,Pt-group metals (6 PGM),3.3e-06,4.3e-06
+S,H/L/LL ordinary chondrite,Pt-group metals (6 PGM),3e-06,5.5e-06
+M,Iron meteorite (Fe-Ni metal),Pt-group metals (6 PGM),5e-06,4e-05
+V,HED basaltic achondrite,Pt-group metals (6 PGM),0.0,1e-08
+D/P,Tagish Lake-like C2 (uncertain),Pt-group metals (6 PGM),2.5e-06,3.5e-06
+C,CI/CM carbonaceous chondrite,Gold,1.4e-07,1.7e-07
+S,H/L/LL ordinary chondrite,Gold,1.4e-07,2.2e-07
+M,Iron meteorite (Fe-Ni metal),Gold,5e-07,1.5e-06
+V,HED basaltic achondrite,Gold,0.0,1e-08
+D/P,Tagish Lake-like C2 (uncertain),Gold,1e-07,1.5e-07
+C,CI/CM carbonaceous chondrite,Phosphorus,0.0009,0.0011
+S,H/L/LL ordinary chondrite,Phosphorus,0.00095,0.0011
+M,Iron meteorite (Fe-Ni metal),Phosphorus,0.001,0.003
+V,HED basaltic achondrite,Phosphorus,0.0003,0.0005
+D/P,Tagish Lake-like C2 (uncertain),Phosphorus,0.0009,0.0011
