@@ -46,6 +46,7 @@ from nea_mining_analysis import (
 )
 
 CSV_OUT = "data/spectral_type_composition.csv"
+CSV_KG_OUT = "data/commodity_mass_by_type_kg.csv"
 MD_OUT = "output/element_mass_fractions.md"
 
 TYPES = ["C", "S", "M", "V", "D/P"]
@@ -186,6 +187,61 @@ def implied_inventory() -> tuple[float, pd.DataFrame]:
     return total_mass, pd.DataFrame(rows)
 
 
+def fmt_kg(pair, type_mass_kg: float) -> str:
+    """Format a (low, high) fraction pair as implied kilograms."""
+    if pair is None:
+        return "~0"
+    lo, hi = pair[0] * type_mass_kg, pair[1] * type_mass_kg
+
+    def e(x):
+        return f"{x:.1e}" if x > 0 else "0"
+
+    return e(hi) if e(lo) == e(hi) else f"{e(lo)}-{e(hi)}"
+
+
+def build_kg_table(total_mass: float) -> tuple[str, pd.DataFrame]:
+    """Per-type commodity masses in kg: grade x (population share x total)."""
+    type_mass = {t: NEA_SHARE[t] * total_mass for t in TYPES}
+
+    header = (
+        "| Commodity (kg) | "
+        + " | ".join(f"{t}-type" for t in TYPES)
+        + " | All types |"
+    )
+    sep = "|---" * (len(TYPES) + 2) + "|"
+    mass_row = (
+        "| *Type mass (share x total)* | "
+        + " | ".join(f"*{type_mass[t]:.1e}*" for t in TYPES)
+        + f" | *{sum(type_mass.values()):.1e}* |"
+    )
+
+    body_rows, records = [], []
+    for commodity, per_type in COMPOSITION.items():
+        cells, tot_lo, tot_hi = [], 0.0, 0.0
+        for t in TYPES:
+            pair = per_type[t]
+            cells.append(fmt_kg(pair, type_mass[t]))
+            lo = 0.0 if pair is None else pair[0] * type_mass[t]
+            hi = 0.0 if pair is None else pair[1] * type_mass[t]
+            tot_lo += lo
+            tot_hi += hi
+            records.append(
+                {
+                    "spectral_type": t,
+                    "commodity": commodity,
+                    "mass_low_kg": lo,
+                    "mass_high_kg": hi,
+                }
+            )
+        body_rows.append(
+            f"| {commodity} | " + " | ".join(cells)
+            + f" | {tot_lo:.1e}-{tot_hi:.1e} |"
+        )
+
+    md = "\n".join([header, sep, mass_row] + body_rows)
+    return md, pd.DataFrame(records)
+
+
 def main() -> None:
     # ---------------- machine-readable CSV ----------------
     records = []
@@ -225,11 +281,10 @@ def main() -> None:
         for commodity, per_type in COMPOSITION.items()
     )
 
-    total_mass, inv = implied_inventory()
-    inv_rows = "\n".join(
-        f"| {r.commodity} | {r.mass_low_kg:.1e} | {r.mass_high_kg:.1e} |"
-        for _, r in inv.iterrows()
-    )
+    total_mass, _ = implied_inventory()
+    kg_table_md, kg_df = build_kg_table(total_mass)
+    kg_df.to_csv(CSV_KG_OUT, index=False)
+    print(f"CSV -> {CSV_KG_OUT}")
     notes = "\n".join(f"* **{t}:** {n}" for t, n in EXTRACTABILITY_NOTES.items())
 
     md = f"""# Expected element mass fractions by asteroid spectral type
@@ -255,20 +310,20 @@ and rarer classes are omitted.
 
 {notes}
 
-## Implied commodity inventory of the >= 140 m Earth-crossing population
+## Implied commodity masses (kg) in the >= 140 m Earth-crossing population
 
-Combining these grades with the mass inventory from
-`nea_mining_analysis.py` (total {total_mass:.2e} kg at 2000 kg/m^3) and
-weighting by the population shares above:
+Each cell converts the grade above into kilograms contained in that
+spectral type's share of the population: grade x (population share x
+total mass), using the {total_mass:.2e} kg inventory from
+`nea_mining_analysis.py` (2000 kg/m^3). The final column sums all types.
 
-| Commodity | Mass low (kg) | Mass high (kg) |
-|---|---|---|
-{inv_rows}
+{kg_table_md}
 
 These are order-of-magnitude figures: they assume the population shares
 apply uniformly across sizes, whereas the actual types of the largest
 (mass-dominating) bodies are individually known and should be used for
-any target-specific estimate.
+any target-specific estimate. Shares sum to ~84% of the population, so
+columns do not add up to the full {total_mass:.2e} kg.
 """
     os.makedirs(os.path.dirname(MD_OUT), exist_ok=True)
     with open(MD_OUT, "w") as f:

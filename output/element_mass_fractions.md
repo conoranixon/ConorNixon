@@ -34,26 +34,29 @@ and rarer classes are omitted.
 * **V:** Basaltic rock: usable as bulk shielding/regolith only; metal and volatile poor.
 * **D/P:** Likely the most volatile-rich, but no confirmed meteorite analog exists; all values are extrapolations.
 
-## Implied commodity inventory of the >= 140 m Earth-crossing population
+## Implied commodity masses (kg) in the >= 140 m Earth-crossing population
 
-Combining these grades with the mass inventory from
-`nea_mining_analysis.py` (total 7.28e+15 kg at 2000 kg/m^3) and
-weighting by the population shares above:
+Each cell converts the grade above into kilograms contained in that
+spectral type's share of the population: grade x (population share x
+total mass), using the 7.28e+15 kg inventory from
+`nea_mining_analysis.py` (2000 kg/m^3). The final column sums all types.
 
-| Commodity | Mass low (kg) | Mass high (kg) |
-|---|---|---|
-| Water (bound H2O) | 1.3e+14 | 2.9e+14 |
-| Carbon (organics) | 3.7e+13 | 7.0e+13 |
-| Sulfur | 1.2e+14 | 1.8e+14 |
-| Iron (total) | 1.3e+15 | 1.7e+15 |
-| Nickel | 7.4e+13 | 1.2e+14 |
-| Cobalt | 3.9e+12 | 5.9e+12 |
-| Free Fe-Ni metal | 3.4e+14 | 1.0e+15 |
-| Pt-group metals (6 PGM) | 1.8e+10 | 4.0e+10 |
-| Gold | 9.0e+08 | 1.6e+09 |
-| Phosphorus | 5.6e+12 | 7.1e+12 |
+| Commodity (kg) | C-type | S-type | M-type | V-type | D/P-type | All types |
+|---|---|---|---|---|---|---|
+| *Type mass (share x total)* | *1.1e+15* | *4.0e+15* | *2.9e+14* | *2.9e+14* | *4.4e+14* | *6.1e+15* |
+| Water (bound H2O) | 1.1e+14-2.2e+14 | 0-4.0e+12 | ~0 | ~0 | 2.2e+13-6.5e+13 | 1.3e+14-2.9e+14 |
+| Carbon (organics) | 2.4e+13-3.8e+13 | 0-8.0e+12 | ~0 | ~0 | 1.3e+13-2.4e+13 | 3.7e+13-7.0e+13 |
+| Sulfur | 2.9e+13-5.9e+13 | 8.0e+13-9.6e+13 | 2.9e+11-5.8e+12 | 0-5.8e+11 | 1.3e+13-1.7e+13 | 1.2e+14-1.8e+14 |
+| Iron (total) | 2.0e+14-2.3e+14 | 7.4e+14-1.1e+15 | 2.5e+14-2.7e+14 | 3.8e+13-4.4e+13 | 7.9e+13-8.7e+13 | 1.3e+15-1.7e+15 |
+| Nickel | 1.1e+13-1.3e+13 | 4.1e+13-6.8e+13 | 1.7e+13-3.5e+13 | 2.9e+08-2.9e+10 | 4.4e+12-5.2e+12 | 7.4e+13-1.2e+14 |
+| Cobalt | 5.5e+11-6.3e+11 | 2.0e+12-3.2e+12 | 1.2e+12-1.7e+12 | 5.8e+08-8.7e+09 | 2.0e+11-2.4e+11 | 3.9e+12-5.9e+12 |
+| Free Fe-Ni metal | 0-5.5e+12 | 8.0e+13-7.2e+14 | 2.6e+14-2.9e+14 | 0-1.5e+12 | 0-4.4e+12 | 3.4e+14-1.0e+15 |
+| Pt-group metals (6 PGM) | 3.6e+09-4.7e+09 | 1.2e+10-2.2e+10 | 1.5e+09-1.2e+10 | 0-2.9e+06 | 1.1e+09-1.5e+09 | 1.8e+10-4.0e+10 |
+| Gold | 1.5e+08-1.9e+08 | 5.6e+08-8.8e+08 | 1.5e+08-4.4e+08 | 0-2.9e+06 | 4.4e+07-6.5e+07 | 9.0e+08-1.6e+09 |
+| Phosphorus | 9.8e+11-1.2e+12 | 3.8e+12-4.4e+12 | 2.9e+11-8.7e+11 | 8.7e+10-1.5e+11 | 3.9e+11-4.8e+11 | 5.6e+12-7.1e+12 |
 
 These are order-of-magnitude figures: they assume the population shares
 apply uniformly across sizes, whereas the actual types of the largest
 (mass-dominating) bodies are individually known and should be used for
-any target-specific estimate.
+any target-specific estimate. Shares sum to ~84% of the population, so
+columns do not add up to the full 7.28e+15 kg.
