@@ -139,6 +139,33 @@ COMPOSITION = {
     },
 }
 
+# ----------------------------------------------------------------------
+# Spot prices, USD per kg of contained element (retrieved 2026-08-20).
+#   Au $4,520/ozt (Kitco); Pt $1,817, Pd $1,312, Rh $8,800, Ru $1,750,
+#   Ir $4,000/ozt (Kitco/Umicore/TradingEconomics); Ni $16,841/t and
+#   Co $56,290/t (LME/TradingEconomics); Fe from 62% iron ore at $95.4/t
+#   -> $154/t contained Fe; S $860/t (ADNOC FOB, Hormuz-inflated record);
+#   P from Morocco phosphate rock $158/t at ~13.1% P -> $1,206/t P.
+# The PGM basket is the six-metal price weighted by CI-chondritic
+# proportions (Ru 20%, Rh 4%, Pd 17%, Os 15%, Ir 14%, Pt 30%); osmium has
+# no liquid market and is carried at a nominal $400/ozt.
+# ----------------------------------------------------------------------
+PRICE_DATE = "2026-08-20"
+OZT = 31.1035e-3  # kg per troy ounce
+
+PRICES_USD_PER_KG = {
+    "Water (bound H2O)": None,       # no terrestrial spot market
+    "Carbon (organics)": None,       # no spot market for raw organics
+    "Sulfur": 0.86,
+    "Iron (total)": 0.154,
+    "Nickel": 16.84,
+    "Cobalt": 56.29,
+    "Free Fe-Ni metal": None,        # value already carried by Fe/Ni/Co/PGM rows
+    "Pt-group metals (6 PGM)": 68000.0,
+    "Gold": 4520.0 / OZT,
+    "Phosphorus": 1.21,
+}
+
 EXTRACTABILITY_NOTES = {
     "C": "Water/organics released by moderate heating (~300-600 C); Fe is "
          "oxidized (magnetite, silicates) and hard to reduce; PGMs dispersed.",
@@ -187,24 +214,30 @@ def implied_inventory() -> tuple[float, pd.DataFrame]:
     return total_mass, pd.DataFrame(rows)
 
 
-def fmt_kg(pair, type_mass_kg: float) -> str:
-    """Format a (low, high) fraction pair as implied kilograms."""
-    if pair is None:
+def fmt_usd(value: float) -> str:
+    """Human-readable dollars: $3.4M, $120B, $45T ..."""
+    for cut, suffix in ((1e15, "Q"), (1e12, "T"), (1e9, "B"), (1e6, "M"), (1e3, "k")):
+        if value >= cut:
+            return f"${value / cut:.3g}{suffix}"
+    return f"${value:.0f}"
+
+
+def fmt_kg_cell(mean_kg: float, price) -> str:
+    """Format one cell: mean mass in kg plus spot value in parentheses."""
+    if mean_kg <= 0:
         return "~0"
-    lo, hi = pair[0] * type_mass_kg, pair[1] * type_mass_kg
-
-    def e(x):
-        return f"{x:.1e}" if x > 0 else "0"
-
-    return e(hi) if e(lo) == e(hi) else f"{e(lo)}-{e(hi)}"
+    mass = f"{mean_kg:.1e}"
+    if price is None:
+        return f"{mass} (n/a)"
+    return f"{mass} ({fmt_usd(mean_kg * price)})"
 
 
 def build_kg_table(total_mass: float) -> tuple[str, pd.DataFrame]:
-    """Per-type commodity masses in kg: grade x (population share x total)."""
+    """Mean commodity mass per type (kg) with value at spot prices."""
     type_mass = {t: NEA_SHARE[t] * total_mass for t in TYPES}
 
     header = (
-        "| Commodity (kg) | "
+        "| Commodity: mean kg (value at spot) | "
         + " | ".join(f"{t}-type" for t in TYPES)
         + " | All types |"
     )
@@ -217,25 +250,25 @@ def build_kg_table(total_mass: float) -> tuple[str, pd.DataFrame]:
 
     body_rows, records = [], []
     for commodity, per_type in COMPOSITION.items():
-        cells, tot_lo, tot_hi = [], 0.0, 0.0
+        price = PRICES_USD_PER_KG[commodity]
+        cells, total = [], 0.0
         for t in TYPES:
             pair = per_type[t]
-            cells.append(fmt_kg(pair, type_mass[t]))
-            lo = 0.0 if pair is None else pair[0] * type_mass[t]
-            hi = 0.0 if pair is None else pair[1] * type_mass[t]
-            tot_lo += lo
-            tot_hi += hi
+            mean = 0.0 if pair is None else 0.5 * (pair[0] + pair[1]) * type_mass[t]
+            total += mean
+            cells.append(fmt_kg_cell(mean, price))
             records.append(
                 {
                     "spectral_type": t,
                     "commodity": commodity,
-                    "mass_low_kg": lo,
-                    "mass_high_kg": hi,
+                    "mass_mean_kg": mean,
+                    "spot_price_usd_per_kg": price,
+                    "value_usd": None if price is None else mean * price,
                 }
             )
         body_rows.append(
             f"| {commodity} | " + " | ".join(cells)
-            + f" | {tot_lo:.1e}-{tot_hi:.1e} |"
+            + f" | {fmt_kg_cell(total, price)} |"
         )
 
     md = "\n".join([header, sep, mass_row] + body_rows)
@@ -312,18 +345,41 @@ and rarer classes are omitted.
 
 ## Implied commodity masses (kg) in the >= 140 m Earth-crossing population
 
-Each cell converts the grade above into kilograms contained in that
-spectral type's share of the population: grade x (population share x
-total mass), using the {total_mass:.2e} kg inventory from
-`nea_mining_analysis.py` (2000 kg/m^3). The final column sums all types.
+Each cell gives the mean of the grade range above converted into
+kilograms contained in that spectral type's share of the population
+(grade x population share x total mass, using the {total_mass:.2e} kg
+inventory from `nea_mining_analysis.py` at 2000 kg/m^3), followed in
+parentheses by its notional value at spot prices retrieved {PRICE_DATE}
+(k/M/B/T/Q = thousand/million/billion/trillion/quadrillion USD).
+The final column sums all types.
 
 {kg_table_md}
 
-These are order-of-magnitude figures: they assume the population shares
-apply uniformly across sizes, whereas the actual types of the largest
-(mass-dominating) bodies are individually known and should be used for
-any target-specific estimate. Shares sum to ~84% of the population, so
-columns do not add up to the full {total_mass:.2e} kg.
+### Spot prices used ({PRICE_DATE})
+
+| Commodity | Price (USD/kg contained element) | Basis |
+|---|---|---|
+| Sulfur | $0.86 | ADNOC FOB $860/t (Hormuz-disruption record high) |
+| Iron | $0.15 | 62% Fe iron ore at $95.4/t, contained-Fe basis |
+| Nickel | $16.84 | LME $16,841/t |
+| Cobalt | $56.29 | benchmark $56,290/t |
+| PGM basket | $68,000 | Pt/Pd/Rh/Ru/Ir/Os spot weighted by chondritic proportions |
+| Gold | $145,320 | $4,520/ozt |
+| Phosphorus | $1.21 | Morocco phosphate rock $158/t at ~13.1% P |
+| Water, organics | n/a | no terrestrial spot market (in-space value is delivery-cost driven) |
+| Free Fe-Ni metal | n/a | value already carried by the Fe/Ni/Co/PGM/Au rows |
+
+### Caveats on the valuations
+
+* These are *notional* figures at today's spot prices. Annual world mine
+  production is ~9 kt Au, ~0.4 kt PGM, ~3.5 Mt Ni: selling even a tiny
+  fraction of the asteroidal inventory would collapse the price. Treat
+  the numbers as resource scale, not revenue.
+* Sulfur is quoted at an all-time-high, geopolitically inflated price
+  (~6x its 2020-2024 norm).
+* Population shares apply uniformly across sizes here, whereas the types
+  of the largest (mass-dominating) bodies are individually known; shares
+  sum to ~84%, so columns do not add to the full {total_mass:.2e} kg.
 """
     os.makedirs(os.path.dirname(MD_OUT), exist_ok=True)
     with open(MD_OUT, "w") as f:
