@@ -1,0 +1,78 @@
+======================================================================
+A. SIM 3513 global chaos polygons (n=114)
+
+medians by unit:
+          area_km2  circularity  solidity  aspect     lat
+Geounits                                                 
+chh       7078.193        0.597     0.849   1.233  26.600
+chl       2644.798        0.545     0.844   1.631 -12.195
+chm       7999.509        0.491     0.824   1.629 -15.748
+
+Kruskal-Wallis across chh/chl/chm:
+  log_area     H=   5.37  p=0.0682
+  circularity  H=   0.52  p=0.771
+  solidity     H=   1.58  p=0.453
+  log_aspect   H=   2.10  p=0.349
+  lat          H=   6.49  p=0.039
+
+pairwise Mann-Whitney log_area:
+  chh vs chl: p=0.0869
+  chh vs chm: p=0.664
+  chl vs chm: p=0.0432
+
+======================================================================
+B. Unsupervised clustering, SIM 3513 morphometrics ['log_area', 'circularity', 'solidity', 'log_aspect']
+
+GMM BIC (lower=better):
+  BIC: {1: 1029.3, 2: 943.2, 3: 870.2, 4: 884.6, 5: 940.6, 6: 952.9}
+  best k by BIC: 3
+  GMM silhouettes: {2: 0.289, 3: 0.275, 4: 0.255, 5: 0.173, 6: 0.187}
+
+KMeans silhouettes:
+  {2: 0.404, 3: 0.413, 4: 0.334, 5: 0.305, 6: 0.284}
+
+GMM k=2 vs geologic unit crosstab:
+gmm2       0   1
+Geounits        
+chh        9   4
+chl       32  17
+chm       39  13
+chi2=1.14 p=0.566
+
+Hartigan dip tests (SIM):
+  log_area     dip=0.0234 p=0.963
+  circularity  dip=0.0220 p=0.984
+  solidity     dip=0.0377 p=0.29
+
+======================================================================
+C. 20 labeled regions: SFD slope continuum test
+SFD slope: dip=0.0892 p=0.19  (p>0.05 = no evidence of multimodality)
+knob fraction: dip=0.0618 p=0.805
+  slope GMM k=1: BIC=6.3
+  slope GMM k=2: BIC=6.8
+  slope GMM k=3: BIC=10.7
+Spearman slope vs knob_frac: rho=-0.343 p=0.139
+Spearman slope vs |lat|: rho=0.029 p=0.905
+Spearman slope vs region area: rho=0.592 p=0.00591
+Spearman knob_frac vs |lat|: rho=0.035 p=0.885
+leading (n=9) vs trailing (n=11) slope MW p=0.0575
+
+======================================================================
+D. Block level: Knob/Block vs Plate
+counts: {'Block': 641, 'Knob': 444, 'Plate': 394}
+  log_area     plate med=  1.115 knob med=  0.722  MW p=2.51e-103
+  circularity  plate med=  0.656 knob med=  0.681  MW p=0.00165
+  solidity     plate med=  0.908 knob med=  0.909  MW p=0.242
+  aspect       plate med=  1.507 knob med=  1.724  MW p=3.66e-12
+block log-area dip test: dip=0.0054 p=0.995
+ALL blocks log-area dip: dip=0.0033 p=1
+logistic plate-vs-knob accuracy: 0.820 (baseline 0.734)
+
+======================================================================
+E. Spatial statistics, SIM 3513 chaos
+total mapped chaos area 1.116e+07 km2 = 36.4% of surface
+leading (lon<0): n=39 area=5.20e+06; trailing: n=75 area=5.97e+06
+  chh: n=13, |lat| median=30.7, area total=1.63e+06 km2
+  chl: n=49, |lat| median=36.3, area total=3.98e+06 km2
+  chm: n=52, |lat| median=26.4, area total=5.56e+06 km2
+chl vs chm |lat| MW p=0.878
