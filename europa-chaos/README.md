@@ -13,7 +13,8 @@ represent distinct mechanisms grouped under the chaos label.
 
 ## Contents
 
-- `report/` — the full report as Markdown (figures render on GitHub) and PDF.
+- `report/` — the full report as Markdown (figures render on GitHub) and PDF,
+  plus a 14-slide deck version (`europa-chaos-subtypes-slides.pptx` / `.pdf`).
 - `figures/` — the six report figures (global map, morphometrics, clustering,
   platy–knobby continuum, endmember close-ups, microchaos).
 - `scripts/` — Python analysis pipeline:
@@ -24,7 +25,8 @@ represent distinct mechanisms grouped under the chaos label.
   - `analysis_main.py`, `analysis_stats.py` — morphometric computation,
     dip tests, GMM/BIC, clustering, and non-parametric statistics.
   - `figs.py` — figure generation.
-  - `md2pdf.py` — Markdown-to-PDF rendering of the report.
+  - `md2pdf.py`, `make_deck.py` — Markdown-to-PDF rendering of the report and
+    slide deck generation.
 - `data/` — derived datasets (reconstructed terrain GeoJSONs, per-feature
   morphometric CSVs, block catalogs, statistics output).
 
