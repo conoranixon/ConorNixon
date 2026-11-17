@@ -60,33 +60,41 @@ def load_blocks():
         reg = name_map.get(row.get('name'))
         if reg is None:
             continue
-        rows.append((reg, 'Leonard22', row.geometry))
-    # Mills: region from filename; X.json = knobs, X_plates.json = plates
+        cls = str(row.get('Block_Plat'))
+        cls = 'plate' if cls.startswith('Plate') else ('knob' if cls.startswith('Blo') else 'unk')
+        rows.append((reg, 'Leonard22', row.geometry, cls))
+    # Mills: Chaos_X.json = ALL blocks; Chaos_X_plates.json = plate subset
+    import collections
+    files = collections.defaultdict(dict)
     for f in glob.glob('/tmp/europa/dl/mills/Geojson Files/geojson_Chaos*/Chaos_*.json'):
-        base = os.path.basename(f)
-        m = re.match(r'Chaos_([A-Za-z]+?)(_plates)?\.json$', base)
-        reg = m.group(1)
-        g = gpd.read_file(f)
-        for geom in g.geometry:
-            if geom is None or geom.is_empty:
-                continue
-            if geom.geom_type not in ('Polygon', 'MultiPolygon'):
-                continue
-            rows.append((reg, 'Mills23', geom))
+        m = re.match(r'Chaos_([A-Za-z]+?)(_plates)?\.json$', os.path.basename(f))
+        files[m.group(1)]['plates' if m.group(2) else 'all'] = f
+    for reg, d in files.items():
+        allg = [g for g in gpd.read_file(d['all']).geometry
+                if g is not None and not g.is_empty
+                and g.geom_type in ('Polygon', 'MultiPolygon')]
+        plg = [g for g in gpd.read_file(d['plates']).geometry
+               if g is not None and not g.is_empty
+               and g.geom_type in ('Polygon', 'MultiPolygon')] if 'plates' in d else []
+        pset = set((round(g.centroid.x, 6), round(g.centroid.y, 6)) for g in plg)
+        for geom in allg:
+            key = (round(geom.centroid.x, 6), round(geom.centroid.y, 6))
+            cls = 'plate' if key in pset else 'knob'
+            rows.append((reg, 'Mills23', geom, cls))
     return rows
 
 
-if not os.path.exists(OUT):
+if True:
     rows = load_blocks()
     print('blocks loaded:', len(rows))
     recs = []
-    for reg, src, geom in rows:
+    for reg, src, geom, cls in rows:
         try:
             m = block_metrics(geom)
         except Exception as e:
             print('skip', reg, e)
             continue
-        m.update(region=reg, source=src)
+        m.update(region=reg, source=src, cls=cls)
         recs.append(m)
     df = pd.DataFrame(recs)
     df.to_csv(OUT, index=False)
