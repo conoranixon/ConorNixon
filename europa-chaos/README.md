@@ -29,6 +29,10 @@ represent distinct mechanisms grouped under the chaos label.
     slide deck generation.
 - `data/` — derived datasets (reconstructed terrain GeoJSONs, per-feature
   morphometric CSVs, block catalogs, statistics output).
+- `review/` — independent verification of the Mills et al. draft "Quantifying
+  Chaos Block Morphology on Europa" (referee-style review, co-author feedback
+  letter in Markdown and Word, verification figure, and the replication
+  scripts that re-measure 2,962 blocks and run the circle-null test).
 
 ## Source data (not included; large external downloads)
 
