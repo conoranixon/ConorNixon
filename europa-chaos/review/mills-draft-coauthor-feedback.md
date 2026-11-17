@@ -24,8 +24,9 @@ worth promoting further.
 
 Before circulating more widely, I ran an independent check of the analysis
 using the public block outlines (the Leonard et al. Zenodo record 12775125
-and your record 10162452 — 2,962 blocks re-measured across the same 20
-regions, with local equal-area projection on the Europa sphere). Most of the
+and your record 10162452 — 2,665 unique blocks re-measured across the same 20
+regions, with local equal-area projection on the Europa sphere, after
+deduplicating the overlapping all-blocks and plate-subset GeoJSON files). Most of the
 paper replicates well, but the check turned up one problem in the jaggedness
 analysis that I think we need to fix before submission, plus a few smaller
 statistical points. Details below; I'm happy to share the scripts and the
@@ -37,12 +38,12 @@ attached verification figure, and to help rework the relevant section.
   max-inscribed-circle definition I get the same answer: no relationship
   with SFD slope once hemisphere is accounted for (a regression of terrain
   roundness on slope + hemisphere puts all the signal in the hemisphere term,
-  p = 0.04, and none in slope, p = 0.68). Section 4's conclusion stands.
+  p = 0.03, and none in slope, p = 0.81). Section 4's conclusion stands.
 - **The hemispheric difference.** My independently computed Hotelling T² came
-  out at 131 against your 121 — essentially the same — with the same
+  out at 160 against your 121 — essentially the same — with the same
   direction (trailing blocks rounder, leading more angular/jagged). Even
   better, the roundness difference survives a conservative terrain-level
-  Mann–Whitney test (p = 0.010 with n = 9 vs 11 terrains), which I'd suggest
+  Mann–Whitney test (p = 0.023 with n = 9 vs 11 terrains), which I'd suggest
   adding (see point 3).
 - Angularity magnitudes, the long upper tail you describe, and the Fisher
   r-to-z arithmetic all check out.
@@ -56,8 +57,8 @@ isoperimetric inequality bounds it below by 1 (so log J ≥ 0 always). But the
 text says J has units of inverse length; Fig. 5's y-axis is in −log(km) with
 most Conamara points *below* zero; and the hemisphere means quoted in §3.4
 (~1,414–1,570) are about three orders of magnitude above anything Eq. 3 can
-produce for real blocks (across all 2,962 blocks I measure Eq. 3 values of
-1.01–5.7, mean 1.65). Empirically, whatever was computed scales almost
+produce for real blocks (across all 2,665 blocks I measure Eq. 3 values of
+1.01–5.7, mean 1.63). Empirically, whatever was computed scales almost
 exactly as 1/Area: a 1/A-type variant fitted to the Conamara blocks gives a
 slope of −0.16 vs your −0.19, whereas Eq. 3 proper is flat (+0.015). Could
 you check the ArcMap/script units here (my guess is a perimeter/area unit
@@ -74,8 +75,8 @@ slope is of course also a size-distribution summary — so the two axes of the
 correlation are the same information measured twice. The decisive test: I
 replaced every block with a perfect circle of the same area (erasing all
 shape information) and re-ran the pipeline. The jaggedness-slope vs SFD-slope
-correlation not only survives, it *strengthens* (circles: ρ = +0.66,
-p = 0.001; real shapes: ρ = +0.57, p = 0.009; the same holds within each
+correlation not only survives, it *strengthens* (circles: ρ = +0.67,
+p = 0.001; real shapes: ρ = +0.54, p = 0.015; the same holds within each
 hemisphere separately). Your §4.3 caveats already point in this direction,
 but §4.4–4.5 and the Conclusions still read the correlation as potentially
 informative about fragmentation — I don't think it can be, as constructed.
@@ -118,7 +119,7 @@ compute it correctly in consistent units and redo §3.3.
    confidence interval (roughly 0.4–0.96) so readers don't over-read it.
 7. **A roundness-vs-size diagnostic would pre-empt the resolution worry**:
    in my re-measurement roundness is uncorrelated with block length
-   (ρ = +0.004 across all blocks), which is reassuring for the null results
+   (ρ = −0.02 across all blocks), which is reassuring for the null results
    and worth one sentence plus a supplementary panel.
 
 ## Housekeeping
@@ -136,9 +137,13 @@ compute it correctly in consistent units and redo §3.3.
     computed) is nearly a deterministic function of the first two
     (r = −0.925) — PC1 and the "97% in three PCs" statement are partly
     built in. PCA on the shape variables alone might say more.
-11. The GeoJSON release for regions I and hh contains ~8 degenerate sliver
-    polygons (1–100 m across) that explode the angularity/jaggedness tails —
-    worth filtering in both the analysis and the archive.
+11. The GeoJSON release for regions I and hh contains a few degenerate
+    sliver polygons (1–100 m across) that explode the angularity/jaggedness
+    tails — worth filtering in both the analysis and the archive. Also, each
+    region's `Chaos_X.json` (all blocks) and `Chaos_X_plates.json` (plate
+    subset) share the same plate geometries, so concatenating the two double
+    counts plates — I did exactly this on my first pass, and a README note
+    would spare others the same mistake.
 12. Typos I noticed: "its' ice shell" (§1), "trialing hemispheres" (§4.5),
     "a newer imagery" (§4.2), "smaller, roundness blocks" (Conclusions), and
     the duplicated mosaic credit in the Fig. 1 caption.

@@ -7,8 +7,9 @@ cursor:
 
 Independent check of the analysis, results, and conclusions, performed against
 the public block datasets (Leonard et al. 2022, Zenodo 12775125; Mills 2023,
-Zenodo 10162452; 2,962 blocks re-measured across the same 20 regions A–I,
-aa–kk, Co). Verification figure:
+Zenodo 10162452; 2,665 unique blocks re-measured across the same 20 regions
+A–I, aa–kk, Co — note the Mills GeoJSON release stores an all-blocks file plus
+an overlapping plate-subset file per region, which must be deduplicated). Verification figure:
 ![verification figure](./mills-draft-check.png). Analysis scripts:
 `check_mills*.py` and `check_fig.py` in this directory.
 
@@ -51,22 +52,22 @@ hedged in the discussion.
 
 - **The null results for roundness and angularity vs. SFD slope are
   confirmed** once the hemisphere confound is controlled. In my re-measurement
-  the pooled terrain-mean roundness actually correlates with SFD slope
-  (ρ = +0.54, p = 0.015), but a regression of terrain roundness on SFD slope
-  + hemisphere shows the slope term is null (p = 0.68) and the hemisphere term
-  significant (p = 0.038): the apparent correlation is the hemisphere
+  the pooled terrain-mean roundness shows at most a marginal correlation with
+  SFD slope (ρ = +0.40, p = 0.08), and a regression of terrain roundness on
+  SFD slope + hemisphere shows the slope term is null (p = 0.81) while the
+  hemisphere term is significant (p = 0.031): the apparent correlation is the hemisphere
   difference in disguise. The draft's core negative conclusion — block shape
   does not track the platy→knobby axis — stands, and is arguably stronger
   than the draft states (see §4, M5).
 - **The hemisphere difference replicates.** Block-level Hotelling's T² on my
-  independently re-measured five variables gives T² = 131, F = 26 (draft:
+  independently re-measured five variables gives T² = 160, F = 32 (draft:
   T² = 121.4, F = 24.2) — remarkably close. Direction agrees: trailing blocks
-  rounder (my means 0.543 vs 0.499; draft 0.331 vs 0.278), leading blocks more
+  rounder (my means 0.545 vs 0.496; draft 0.331 vs 0.278), leading blocks more
   angular. Crucially, the trailing-rounder difference survives an honest
-  terrain-level Mann-Whitney test (p = 0.010, n = 9 vs 11) — this is the
+  terrain-level Mann-Whitney test (p = 0.023, n = 9 vs 11) — this is the
   paper's most defensible positive result (but see M4 on the T² itself).
-- **Angularity values are in the right range** (my cleaned terrain means
-  359–581 vs. draft 445–711; medians and the long upper tail they describe
+- **Angularity values are in the right range** (my terrain means span a
+  comparable range to the draft's 445–711; medians and the long upper tail they describe
   both reproduce). Differences are consistent with their expanded block set.
 - **Fisher r-to-z arithmetic checks out** (e.g., their z = 2.648 for the
   jaggedness-slope hemisphere contrast is what the standard formula gives for
@@ -80,7 +81,7 @@ hedged in the discussion.
   length," Fig. 5's y-axis is labeled −log(km) with most Conamara values
   *below* 0 (impossible under Eq. 3), and the reported hemisphere means
   (~1,414–1,570) are three orders of magnitude above anything Eq. 3 can give
-  for real blocks (my measured range: 1.01–5.7, mean 1.65). Empirically,
+  for real blocks (my measured range: 1.01–5.7, mean 1.63). Empirically,
   whatever was computed scales ≈ 1/A (my fit of the 1/A-type variant on
   Conamara gives slope −0.16 vs. their −0.19; Eq. 3 proper gives +0.015,
   i.e. flat). Either Eq. 3 or the computation is wrong, and the text,
@@ -104,12 +105,12 @@ nearly guaranteed by construction, independent of block shape:
   same area (all shape information erased) and re-ran their pipeline
   (per-terrain linear fit of log jaggedness vs. √A, then Spearman vs. SFD
   slope). The correlation not only persists — it strengthens: real shapes
-  ρ = +0.57 (p = 0.009); circles ρ = +0.66 (p = 0.001). Per hemisphere:
-  leading real +0.65 / circles +0.68; trailing real +0.81 / circles +0.82.
+  ρ = +0.54 (p = 0.015); circles ρ = +0.67 (p = 0.001). Per hemisphere:
+  leading real +0.60 / circles +0.68; trailing real +0.76 / circles +0.81.
 - *Mechanism:* fitting a line to log(1/L²) vs. L gives a slope controlled by
   the terrain's mean block size (null jaggedness slope vs. 1/mean L:
-  ρ = −0.57, p = 0.008), and the SFD slope is likewise a size-distribution
-  summary (SFD slope vs. mean L: ρ = +0.52, p = 0.018). The two axes of
+  ρ = −0.54, p = 0.013), and the SFD slope is likewise a size-distribution
+  summary (SFD slope vs. mean L: ρ = +0.56, p = 0.010). The two axes of
   their correlation are the same quantity measured twice.
 
 The draft's §4.3 caveats gesture at this ("differences in jaggedness slope
@@ -137,7 +138,7 @@ M1) and the Fisher contrast. Wording must match the table.
 independent samples, but blocks are clustered within 20 terrains that differ
 in mapper, image geometry, and incidence angle; effective n is closer to 20
 than 2,000. The result survives a terrain-level test for roundness
-(p ≈ 0.01), so the conclusion is salvageable, but the inference should be
+(p ≈ 0.02), so the conclusion is salvageable, but the inference should be
 hierarchical (e.g., mixed model with terrain random effect, or terrain-level
 tests). The PCA panel shows the two hemisphere clouds almost fully
 overlapping — "significant" here means a small mean shift detected with huge
@@ -147,7 +148,7 @@ n, and should be characterized by effect size, not p-value.
 Leading-hemisphere terrains are systematically knobbier (D, E, F, H), so
 hemisphere and SFD slope are collinear. My regression (terrain roundness ~
 SFD slope + hemisphere) attributes the roundness signal to *hemisphere*
-(p = 0.038), not slope (p = 0.68). The draft could make this explicit — it
+(p = 0.031), not slope (p = 0.81). The draft could make this explicit — it
 simultaneously strengthens the "no evolution signal" conclusion and the
 hemispheric-difference finding, which is a cleaner story than presenting the
 two results separately.
@@ -179,11 +180,14 @@ two results separately.
 7. Roundness depends on block pixel footprint at 250 m/px (small blocks are
    few-vertex polygons). A roundness-vs-size diagnostic would strengthen the
    null claims; in my re-measurement roundness is uncorrelated with block
-   length (ρ = +0.004), which is reassuring and worth reporting.
+   length (ρ = −0.02), which is reassuring and worth reporting.
 8. The Mills 2023 Zenodo GeoJSONs contain a handful of degenerate sliver
-   polygons (8 features with lengths of 1–100 m in regions I and hh) that
+   polygons (features with lengths of 1–100 m in regions I and hh) that
    explode the angularity and jaggedness tails; worth filtering/flagging in
-   the released data. The dataset DOIs (10.5281/zenodo.6338798 /12775125,
+   the released data. Separately, each region ships an all-blocks file
+   (`Chaos_X.json`) plus a plate-subset file (`Chaos_X_plates.json`) whose
+   features duplicate geometries in the first — concatenating them double
+   counts every plate, so the release README should state the structure. The dataset DOIs (10.5281/zenodo.6338798 /12775125,
    10.5281/zenodo.10162452, plus the new mappings) belong in Open Research.
 9. Typos: "its' ice shell" (§1), "trialing hemispheres" (§4.5), "a newer
    imagery" (§4.2), "roundness blocks" (Conclusions ¶1), Fig. 1 caption
