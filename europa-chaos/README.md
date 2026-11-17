@@ -32,7 +32,14 @@ represent distinct mechanisms grouped under the chaos label.
 - `review/` — independent verification of the Mills et al. draft "Quantifying
   Chaos Block Morphology on Europa" (referee-style review, co-author feedback
   letter in Markdown and Word, verification figure, and the replication
-  scripts that re-measure 2,962 blocks and run the circle-null test).
+  scripts that re-measure 2,665 unique blocks and run the circle-null test).
+- `age-tests/` — first quantitative tests of the hypothesis that knobby
+  chaos is older, degraded platy chaos: lineament superposition against the
+  SIM 3513 linear-feature map, and knob spatial-organization statistics
+  (Ripley's K clustering, knob-plate proximity, orientation coherence), with
+  results document, figure, scripts, and result tables. Bottom line: no
+  support for knobbiness as an age gradient; knob fields do carry plate-scale
+  structure, but it is formation-time inheritance, not slow degradation.
 
 ## Source data (not included; large external downloads)
 
